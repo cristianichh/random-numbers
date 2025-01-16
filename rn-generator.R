@@ -43,12 +43,12 @@ ggplot(abs_diff, aes(x = value)) + geom_histogram(aes(y = after_stat(count/sum(c
 # Do these Data Generation Processes give the same frequency distribution?
 # Let X be a random variable generated from a uniform distribution:
 # X ~ Uniform(0, 1)
-# Define two different probability distributions:
+# Define two different cumulative probability distributions:
 # a) P(X^(1/d) <= z) = z^d for d ∈ ℕ (natural numbers)
 # b) P(max(X1, ..., Xd) <= z) = z^d for d ∈ ℕ (natural numbers)
+
 # Perform the Wilcoxon rank-sum test to compare the two distributions:
 # Null Hypothesis (H0): F_a(X) = F_b(X) for all x
-
 test <- wilcox.test(max_X$value, root_X$value)
 test
 if (test$p.value < .05 ) {
