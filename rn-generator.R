@@ -3,8 +3,8 @@ library(tidyverse)
 library(gridExtra)
 
 # Set lenght and dimensions
-l <- 2222
-d <- 2
+l <- 222
+d <- 3
 
 # Generate random numbers and compute the n-th root
 a <- as.data.frame(runif(l)^(1/d))
@@ -20,13 +20,13 @@ colnames(b) <- "value"
 
 # Create the histogram plot
 p2 <- ggplot(b, aes(x = value)) + 
-  geom_histogram(aes(y = after_stat(count/sum(count))), binwidth = 0.02, fill = "lightgreen", color = "black") + scale_y_continuous(labels = scales::percent) +
-  labs(title = paste("Frequency distribution of the maximum between ", d, " random numbers between 0 and 1", sep = ""), 
+  geom_histogram(aes(y = after_stat(count/sum(count))), binwidth = 0.01, fill = "lightgreen", color = "black") + scale_y_continuous(labels = scales::percent) +
+  labs(title = paste("Relative frequency of the maximum between ", d, " random numbers between 0 and 1", sep = ""), 
        y = "Relative Frequency") + xlim(0, 0.999999999) + theme_minimal()
 
 p1 <- ggplot(a, aes(x = value)) + 
-  geom_histogram(aes(y = after_stat(count/sum(count))), binwidth = 0.02, fill = "lightblue", color = "black") + scale_y_continuous(labels = scales::percent) +
-  labs(title = paste("Frequency distribution of ", d, "-th root for random number between 0 and 1", sep = ""), 
+  geom_histogram(aes(y = after_stat(count/sum(count))), binwidth = 0.01, fill = "lightblue", color = "black") + scale_y_continuous(labels = scales::percent) +
+  labs(title = paste("Relative frequency of ", d, "-th root for random number between 0 and 1", sep = ""), 
        y = "Relative Frequency") + xlim(0, 0.999999999) + theme_minimal()
 
 grid.arrange(p1, p2, nrow = 2)
@@ -35,15 +35,20 @@ grid.arrange(p1, p2, nrow = 2)
 
 a_ord <- a %>% arrange(a) 
 b_ord <- b %>% arrange(b)
-c <- (a_ord - b_ord)^2
+c <- abs(a_ord - b_ord)
 ggplot(c, aes(x = value)) + geom_histogram(aes(y = after_stat(count/sum(count))), fill = "orange", color = "black") +
-  scale_y_continuous(labels = scales::percent) + labs(title = paste("Frequency distribution of the squared differences between the ordered observations of the DGPs"), 
+  scale_y_continuous(labels = scales::percent) + labs(title = paste("Relative frequency of the absolute difference between sorted samples"), 
        y = "Relative Frequency") + theme_minimal()
 
-# The two Data Generation Processes give the same frequency distribution
+# Do these Data Generation Processes give the same frequency distribution?
 # Xi = runif(min=0, max=1)
 # a <- P( X1^(1/d) <= z) = z^d
 # b <- P( max(X1,...,Xd) <= z) = z^d
+# Perform Wilcoxon test (H0: Fa(X) = Fb(X) for all x)
+# Reject H0 if p-value < 0.05
+
+wilcox.test(a[,1], b[,1])
+
 
 rm(list=ls())
 cat("\014")
